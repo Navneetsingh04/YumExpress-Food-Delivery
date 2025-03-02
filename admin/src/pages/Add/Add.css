@@ -1,0 +1,137 @@
+.add {
+    width: 70%;
+    margin: 50px auto;
+    color: #444;
+    font-size: 16px;
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.add form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Image Upload Section */
+.add-img-upload {
+    width: 140px;
+    text-align: center;
+}
+
+.add-img-upload img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.add-img-upload img:hover {
+    transform: scale(1.05);
+}
+
+/* Product Name & Description */
+.add-product-name,
+.add-product-description {
+    width: max(40%, 280px);
+}
+
+.add-product-name input,
+.add-product-description textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-product-name input:focus,
+.add-product-description textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+/* Product Price and Category*/
+.add-category-price {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.add-category-price .add-category,
+.add-category-price .add-price {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 100px;
+}
+
+.add-category-price p {
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+}
+
+.add-category-price select,
+.add-category-price input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    transition: border 0.3s ease-in-out;
+}
+
+.add-category-price select:hover,
+.add-category-price input:hover {
+    border-color: #007bff;
+}
+
+/* Submit Button */
+.add-btn {
+    max-width: 150px;
+    border: none;
+    padding: 12px;
+    background: linear-gradient(135deg, #000, #444);
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.add-btn:hover {
+    background: linear-gradient(135deg, #444, #000);
+    transform: scale(1.05);
+}
+
+.add-btn:active {
+    transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .add {
+        width: 90%;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .add-category-price {
+        flex-direction: column;
+        gap: 15px;
+    }
+}

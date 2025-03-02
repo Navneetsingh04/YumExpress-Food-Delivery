@@ -22,14 +22,22 @@ const Order = ({ url }) => {
   };
 
   const statusHandler = async (event, orderId) => {
-    const response = await axios.post(url + "/api/order/status", {
-      orderId,
-      status: event.target.value,
-    });
-    if (response.data.success) {
-      await fetchAllOrders();
+    try {
+      const response = await axios.post(url + "/api/order/status", {
+        orderId,
+        status: event.target.value,
+     });
+      if (response.data.success) {
+        await fetchAllOrders();
+      }
+      else{
+        toast.error("Failed to update status");
+      }
+    } catch (error) {
+      console.error("Status Update Error:", error);
+      toast.error("Error updating order status");
     }
-  };
+};
 
   useEffect(() => {
     fetchAllOrders();
@@ -55,17 +63,18 @@ const Order = ({ url }) => {
                     .map((item) => `${item.name} x ${item.quantity}`)
                     .join(", ")}
                 </p>
-                <p className="order-item-name">
-                  {order.address.firstname} {order.address.lastname}
-                </p>
+                <br />
                 <div className="order-item-address">
-                  <p>{order.address.street},</p>
-                  <p>
-                    {order.address.city}, {order.address.state},{" "}
-                    {order.address.country}, {order.address.zipcode}
+                  <p><strong>Name:{" "}</strong>{order.userId.name}</p> 
+                  <br/>
+                  <p><strong>Adress:{" "}</strong>
+                  {order.address.street},{" "} <br/>
+                    {order.address.city},{" "},{order.address.state},{" "}
+                    {order.address.country},{" "} {order.address.zipcode}
                   </p>
                 </div>
-                <p className="order-item-phone">{order.address.phone}</p>
+                <p><strong>Order Time: </strong> {new Date(order.date).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</p>
+                <p className="order-item-phone">Ph: {order.address.phone}</p>
               </div>
               <p>Items: {order.items.length}</p>
               <p className="order-amount">₹{order.amount}</p>

@@ -61,8 +61,12 @@ const Footer = () => {
           <div className="footer-content-right">
             <h2>Contact Us</h2>
             <ul>
-              <li>+91-7894561236</li>
-              <li>yumexpress@gmail.com</li>
+              <li>
+                <a href="tel:+91-9135573167">+91-9135573167</a>
+              </li>
+              <li>
+                <a href="mailto:yumexpress04@gmail.com">yumexpress04@gmail.com</a>
+              </li>
             </ul>
           </div>
         </div>

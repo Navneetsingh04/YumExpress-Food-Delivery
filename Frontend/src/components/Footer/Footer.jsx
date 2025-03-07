@@ -17,7 +17,7 @@ const Footer = () => {
       <div className="footer" id="footer">
         <div className="footer-content">
           <div className="footer-content-left">
-            <img className="footer-logo" src={assets.logo} alt="" />
+            <img className="footer-logo" src={assets.logo} alt="YumExpress" />
             <p>
               At YumExpress, we bring delicious meals from your favorite
               restaurants straight to your doorstep. With a focus on speed,
@@ -29,9 +29,27 @@ const Footer = () => {
               YumExpress where convenience meets taste!
             </p>
             <div className="footer-social-icon">
-              <img src={assets.facebook_icon} alt="" />
-              <img src={assets.twitter_icon} alt="" />
-              <img src={assets.linkedin_icon} alt="" />
+              <a
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={assets.facebook_icon} alt="facebook" />
+              </a>
+              <a
+                href="https://x.com/YumExpress04"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={assets.twitter_icon} alt="twitter" />
+              </a>
+              <a
+                href="https://www.instagram.com/yumexpressfood/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={assets.insta_icon} alt="instagram" />
+              </a>
             </div>
             <div className="footer-bottom">
               <h3 className="footer-developer">
@@ -65,7 +83,9 @@ const Footer = () => {
                 <a href="tel:+91-9135573167">+91-9135573167</a>
               </li>
               <li>
-                <a href="mailto:yumexpress04@gmail.com">yumexpress04@gmail.com</a>
+                <a href="mailto:yumexpress04@gmail.com">
+                  yumexpress04@gmail.com
+                </a>
               </li>
             </ul>
           </div>

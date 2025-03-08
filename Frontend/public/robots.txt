@@ -1,13 +1,4 @@
 User-agent: *
-Disallow: /admin/  
-Disallow: /cart/  
-Disallow: /checkout/  
-Disallow: /user-profile/  
-Disallow: /login/  
-Disallow: /register/  
-Disallow: /search  
-Disallow: /tmp/  
-Disallow: /private/  
 
 Allow: /  
 Allow: /menu  

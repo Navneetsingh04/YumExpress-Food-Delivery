@@ -13,7 +13,7 @@
 
   <!-- Menu Page -->
   <url>
-    <loc>https://yumexpress-delivery.onrender.com/#explore-menu</loc>
+    <loc>https://yumexpress-delivery.onrender.com/menu</loc>
     <lastmod>2025-03-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -36,7 +36,7 @@
 
   <!-- Contact Page -->
   <url>
-    <loc>https://yumexpress-delivery.onrender.com/#footer</loc>
+    <loc>https://yumexpress-delivery.onrender.com/footer</loc>
     <lastmod>2025-03-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

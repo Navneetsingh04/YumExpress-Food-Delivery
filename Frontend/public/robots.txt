@@ -12,9 +12,7 @@ Disallow: /private/
 Allow: /  
 Allow: /menu  
 Allow: /about  
-Allow: /contact  
-
-
-Crawl-delay: 10  
+Allow: /privacy-policy  
+Allow: /delivery
 
 Sitemap: https://yumexpress-delivery.onrender.com/sitemap.xml

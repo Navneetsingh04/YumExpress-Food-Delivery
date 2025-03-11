@@ -57,7 +57,8 @@ const listOrders = async (req, res) => {
     const orders = await orderModel
       .find({ payment: true }) 
       .populate("userId", "name email")
-      .select("userId items amount address status payment date");
+      .select("userId items amount address status payment date")
+      .sort({ date: -1 });
     res.json({ success: true, data: orders });
   } catch (error) {
     console.error("Error fetching orders:", error);

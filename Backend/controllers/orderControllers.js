@@ -41,7 +41,8 @@ const userOrder = async (req, res) => {
       userId: req.body.userId,
       payment: true,
     })
-    .populate("userId", "name email");
+    .populate("userId", "name email")
+    .sort({date: -1});
     res.json({ success: true, data: orders });
   } catch (error) {
     console.log(error);

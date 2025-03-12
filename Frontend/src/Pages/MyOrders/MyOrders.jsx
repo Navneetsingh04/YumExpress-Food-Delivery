@@ -15,7 +15,12 @@ const MyOrders = () => {
         {},
         { headers: { token } }
       );
-      setData(response.data.data);
+      const formattedOrders = response.data.data.map((order) => ({
+        ...order,
+        formattedDate: new Date(order.date).toLocaleDateString("en-GB"),
+      }));
+
+      setData(formattedOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -41,8 +46,9 @@ const MyOrders = () => {
             </p>
             <p>₹{order.amount}.00</p>
             <p>Items: {order.items.length}</p>
+            <p className="order-date">📅 {order.formattedDate}</p>
             <p>
-              <span>&#x25cf;</span>
+              <span>&#x25cf;&nbsp;</span>
               <b>{order.status}</b>
             </p>
             <button onClick={fetchOrders}>Track Order</button>

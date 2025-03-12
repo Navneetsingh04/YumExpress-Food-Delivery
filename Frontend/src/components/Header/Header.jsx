@@ -3,7 +3,7 @@ import React from "react";
 import "./Header.css";
 const Header = () => {
   const scrollToMenu = () => {
-    const menuSection = document.getElementById("explore-menu");
+    const menuSection = document.getElementById("menu");
     if (menuSection) {
       menuSection.scrollIntoView({ behavior: "smooth" });
     }

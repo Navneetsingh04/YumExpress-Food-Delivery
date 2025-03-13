@@ -5,40 +5,36 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://yumexpress-delivery.onrender.com/</loc>
-    <lastmod>2025-03-08</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <loc>https://yumexpress-delivery.onrender.com</loc>
   </url>
 
-  <!-- Menu Page -->
+  <!-- Cart Page -->
   <url>
-    <loc>https://yumexpress-delivery.onrender.com/menu</loc>
-    <lastmod>2025-03-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://yumexpress-delivery.onrender.com/cart</loc>
+  </url>
+
+  <!-- Myorder Page -->
+  <url>
+    <loc>https://yumexpress-delivery.onrender.com/myorder</loc>
   </url>
 
   <!-- About Page -->
   <url>
     <loc>https://yumexpress-delivery.onrender.com/about</loc>
-    <lastmod>2025-03-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
   </url>
-  <!-- Delivery information Page -->
+
+  <!-- Delivery Information Page -->
   <url>
     <loc>https://yumexpress-delivery.onrender.com/delivery</loc>
-    <lastmod>2025-03-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
   </url>
 
   <!-- Contact Page -->
   <url>
-    <loc>https://yumexpress-delivery.onrender.com/footer</loc>
-    <lastmod>2025-03-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://yumexpress-delivery.onrender.com/contact</loc>
+  </url>
+
+  <!-- Menu Page -->
+  <url>
+    <loc>https://yumexpress-delivery.onrender.com/menu</loc>
   </url>
 </urlset>

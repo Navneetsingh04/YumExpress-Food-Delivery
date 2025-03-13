@@ -1,9 +1,11 @@
 User-agent: *
 
-Allow: /  
-Allow: /menu  
-Allow: /about  
+Allow: /   
+Allow: /cart
+Allow: /myorder
 Allow: /privacy-policy  
 Allow: /delivery
+Allow: /menu  
+Allow: /about
 
 Sitemap: https://yumexpress-delivery.onrender.com/sitemap.xml

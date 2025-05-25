@@ -90,11 +90,11 @@ const Footer = () => {
             </ul>
           </div>
         </div>
+        <hr />
+        {/* <AppDownload /> */}
         <p className="footer-copyright">
           Copyright 2025 ©️ YumExpress.com. All Rights Reserved!
         </p>
-        <hr />
-        <AppDownload />
       </div>
     </>
   );

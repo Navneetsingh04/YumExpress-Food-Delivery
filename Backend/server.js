@@ -11,6 +11,12 @@ import paymentRouter from "./routes/paymentRouter.js";
 // Configure environment variables
 dotenv.config();
 
+// Validate required environment variables
+if (!process.env.MONGO_URI) {
+  console.error("MONGO_URI environment variable is required");
+  process.exit(1);
+}
+
 // app config
 
 const app = express();

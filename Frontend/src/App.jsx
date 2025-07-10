@@ -11,6 +11,8 @@ import PlaceOrder from "./Pages/PlaceOrder/PlaceOrder";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Verify from "./Pages/Verify/Verify";
 import MyOrders from "./Pages/MyOrders/MyOrders";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -22,6 +24,8 @@ const App = () => {
   }, [location.pathname]);
   return (
     <>
+      <ToastContainer position="top-right" autoClose={5000} />
+
       {showLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}
       <div className="app">
         <Navbar setShowLogin={setShowLogin} />
@@ -30,7 +34,7 @@ const App = () => {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/delivery" element={<Delivery />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/Cart" element={<Cart />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/myorders" element={<MyOrders />} />

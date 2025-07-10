@@ -3,6 +3,7 @@ import axios from "axios";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItem, url } =
@@ -32,12 +33,12 @@ const PlaceOrder = () => {
     event.preventDefault();
 
     if (!token) {
-      alert("You must be logged in to place an order.");
+      toast.error("You must be logged in to place an order.");
       return;
     }
 
     if (!food_list || !cartItem) {
-      alert("Your cart is empty.");
+      toast.error("Your cart is empty.");
       return;
     }
 
@@ -66,11 +67,10 @@ const PlaceOrder = () => {
         setOrderCreatedData({ amount, orderId });
         setOpenRazorpay(true);
       } else {
-        alert(`Order failed: ${response.data.message}`);
+        toast.error(`Order failed. Please try again.`);
       }
     } catch (error) {
-      console.error("Error placing order:", error);
-      alert("An error occurred. Please try again.");
+      toast.error("An error occurred while placing the order. Please try again.");
     }
   };
 
@@ -109,7 +109,7 @@ const PlaceOrder = () => {
     );
 
     if (!res) {
-      alert("Razropay failed to load!!");
+      toast.error("Razorpay failed to load. Please try again later.");
       return;
     }
 
@@ -144,7 +144,7 @@ const PlaceOrder = () => {
       order_id: order_id,
       handler: async function (response) {
         console.log(response, "response");
-        console.log("order placed");
+        toast.success("Payment successful");
 
         const verifyPayment = await axios.post(
           url + "/api/payment/verify",
@@ -157,6 +157,7 @@ const PlaceOrder = () => {
         );
         if (verifyPayment.data.success) {
           alert("Payment successful");
+          toast.success("Order placed successfully!");
           navigate("/myorders");
         }
       },

@@ -143,8 +143,8 @@ const PlaceOrder = () => {
       description: "Transaction",
       order_id: order_id,
       handler: async function (response) {
-        console.log(response, "response");
-        toast.success("Payment successful");
+        // console.log(response, "response");
+        // toast.success("Payment successful");
 
         const verifyPayment = await axios.post(
           url + "/api/payment/verify",

@@ -24,7 +24,7 @@ const App = () => {
   }, [location.pathname]);
   return (
     <>
-      <ToastContainer position="top-right" autoClose={5000} />
+      <ToastContainer position="top-right" autoClose={3000} />
 
       {showLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}
       <div className="app">

@@ -7,7 +7,7 @@ const List = ({ url }) => {
   const fetchList = async () => {
     const response = await axios.get(`${url}/api/food/list`);
     if (response.data.success) {
-      console.log(response.data);
+      // console.log(response.data);
       setList(response.data.data);
     } else {
       toast.error("Error");

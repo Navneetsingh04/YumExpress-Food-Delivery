@@ -156,7 +156,6 @@ const PlaceOrder = () => {
           }
         );
         if (verifyPayment.data.success) {
-          alert("Payment successful");
           toast.success("Order placed successfully!");
           navigate("/myorders");
         }

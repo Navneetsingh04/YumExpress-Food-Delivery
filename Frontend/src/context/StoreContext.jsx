@@ -8,6 +8,8 @@ const StoreContextProvider = (props) => {
   const url = "https://yumexpress-backend.onrender.com";
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredFoodList, setFilteredFoodList] = useState([]);
 
   const addToCart = async (itemId) => {
     setCartItem((prev) => ({
@@ -68,6 +70,7 @@ const StoreContextProvider = (props) => {
       const response = await axios.get(url + "/api/food/list");
       if (response.data.success) {
         setFoodList(response.data.data);
+        setFilteredFoodList(response.data.data); // Initialize filtered list
       } else {
         console.error("Error fetching food list");
       }
@@ -93,6 +96,11 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  // Search functionality
+  const searchFood = (term) => {
+    setSearchTerm(term);
+  };
+
   useEffect(() => {
     const loadData = async () => {
       await fetchFoodList();
@@ -105,8 +113,26 @@ const StoreContextProvider = (props) => {
     loadData();
   }, [token]); // Depend on `token` to re-fetch data when it changes
 
+  // Update filtered list whenever search term or food list changes
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredFoodList(food_list);
+    } else {
+      const filtered = food_list.filter(
+        (food) =>
+          food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          food.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          food.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredFoodList(filtered);
+    }
+  }, [searchTerm, food_list]);
+
   const contextValue = {
     food_list,
+    filteredFoodList,
+    searchTerm,
+    searchFood,
     cartItem,
     setCartItem,
     addToCart,

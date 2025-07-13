@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./ExploreMenu.css";
 import { menu_list } from "../../assets/assets";
+import { StoreContext } from "../../context/StoreContext";
 
 const ExploreMenu = ({ category, setCatgory }) => {
+  const { searchFood } = useContext(StoreContext);
+  
+  const handleCategoryClick = (menuName) => {
+    // Clear search when selecting a category
+    searchFood("");
+    setCatgory((prev) =>
+      prev === menuName ? "All" : menuName
+    );
+  };
   return (
     <div className="explore-menu" id="menu">
       <h1>Explore our menu</h1>
@@ -16,11 +26,7 @@ const ExploreMenu = ({ category, setCatgory }) => {
         {menu_list.map((item, index) => {
           return (
             <div
-              onClick={() =>
-                setCatgory((prev) =>
-                  prev === item.menu_name ? "All" : item.menu_name
-                )
-              }
+              onClick={() => handleCategoryClick(item.menu_name)}
               key={index}
               className="explore-menu-list-item"
             >

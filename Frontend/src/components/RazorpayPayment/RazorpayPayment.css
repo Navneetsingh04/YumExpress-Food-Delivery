@@ -1,0 +1,46 @@
+/* RazorpayPayment Component Styles */
+
+/* This component doesn't render visible UI, but these styles 
+   can be used for any loading states or modal overlays if needed */
+
+.razorpay-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.razorpay-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #ff6347;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Custom Razorpay modal styling (if needed) */
+.razorpay-container {
+  z-index: 10000;
+}
+
+/* Error states */
+.payment-error {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ffcdd2;
+  margin: 10px 0;
+}

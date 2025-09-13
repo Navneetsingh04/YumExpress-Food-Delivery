@@ -14,14 +14,62 @@
     color: #808080;
 }
 
+.explore-menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 20px 0px;
+}
+
+.scroll-arrow {
+    background: white;
+    border: 2px solid #ff6347;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+    color: #ff6347;
+    flex-shrink: 0;
+}
+
+.scroll-arrow:hover {
+    background: #ff6347;
+    color: white;
+    transform: scale(1.1);
+}
+
+.scroll-arrow:active {
+    transform: scale(0.95);
+}
+
+.scroll-arrow.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.scroll-arrow-left {
+    margin-right: 15px;
+}
+
+.scroll-arrow-right {
+    margin-left: 15px;
+}
+
 .explore-menu-list {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     gap: 30px;
     text-align: center;
-    margin: 20px 0px;
-    overflow-x: scroll;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    flex: 1;
+    padding: 0 10px;
 }
 
 .explore-menu-list::-webkit-scrollbar {
@@ -30,10 +78,14 @@
 
 .explore-menu-list-item img {
     width: 7.5vw;
+    height: 7.5vw;
     min-width: 80px;
+    min-height: 80px;
     cursor: pointer;
     border-radius: 50%;
     transition: 0.2s;
+    object-fit: cover;
+    aspect-ratio: 1;
 }
 
 .explore-menu-list-item p {
@@ -53,11 +105,52 @@
 .explore-menu-list-item .active {
     border: 4px solid tomato;
     padding: 2px;
+    border-radius: 50%;
 }
 
 @media (max-width:1050px) {
     .explore-menu-text {
         max-width: 100%;
         font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .scroll-arrow {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .scroll-arrow-left {
+        margin-right: 10px;
+    }
+    
+    .scroll-arrow-right {
+        margin-left: 10px;
+    }
+    
+    .explore-menu-list {
+        gap: 20px;
+        padding: 0 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .scroll-arrow {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .explore-menu-container {
+        margin: 15px 0px;
+    }
+    
+    .explore-menu-list {
+        gap: 15px;
+    }
+    
+    .explore-menu-list-item img {
+        min-width: 70px;
+        min-height: 70px;
     }
 }

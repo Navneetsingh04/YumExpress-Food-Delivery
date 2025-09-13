@@ -3,7 +3,11 @@ import axios from "axios";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import {toast} from "react-hot-toast";
+import AddressSelector from "../../components/AddressSelector/AddressSelector";
+import ContactForm from "../../components/ContactForm/ContactForm";
+import ManualAddressForm from "../../components/ManualAddressForm/ManualAddressForm";
+import RazorpayPayment from "../../components/RazorpayPayment/RazorpayPayment";
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItem, url } =
@@ -11,22 +15,122 @@ const PlaceOrder = () => {
 
   const [openRazorpay, setOpenRazorpay] = useState(false);
   const [orderCreatedData, setOrderCreatedData] = useState(null);
-
-  const [data, setData] = useState({
+  
+  // Simplified state management
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [contactData, setContactData] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
+  });
+  const [addressData, setAddressData] = useState({
     street: "",
     city: "",
     state: "",
     zipcode: "",
-    country: "",
-    phone: "",
+    country: "India",
   });
 
-  const onChangeHandler = (event) => {
-    const { name, value } = event.target;
-    setData((prevData) => ({ ...prevData, [name]: value }));
+  const navigate = useNavigate();
+
+  // Payment handlers
+  const handlePaymentSuccess = (paymentData) => {
+    setOpenRazorpay(false);
+    setOrderCreatedData(null);
+  };
+
+  const handlePaymentError = (error) => {
+    console.error("Payment failed:", error);
+    setOpenRazorpay(false);
+  };
+
+  const handlePaymentClose = () => {
+    setOpenRazorpay(false);
+  };
+
+  // Handle address selection from AddressSelector
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address);
+    
+    if (address) {
+      // Note: We store the address object and parse the userName in buildOrderData()
+      // This ensures we always use the address-specific name, not user profile name
+      const nameParts = address.userName ? address.userName.split(' ') : ['', ''];
+      setContactData(prev => ({
+        ...prev,
+        firstName: nameParts[0] || '',
+        lastName: nameParts.slice(1).join(' ') || '',
+        phone: address.phone
+      }));
+      
+      // Clear manual address data since we're using saved address
+      setAddressData({
+        street: "",
+        city: "",
+        state: "",
+        zipcode: "",
+        country: "India",
+      });
+    } else {
+      // Manual entry - clear saved address data (contact form will be shown)
+      setContactData(prev => ({
+        ...prev,
+        firstName: '',
+        lastName: '',
+        phone: ''
+      }));
+    }
+  };
+
+  // Auto-populate user email on mount
+  const fetchUserProfile = async () => {
+    try {
+      const response = await axios.get(url + "/api/user/profile", {
+        headers: { token },
+      });
+      if (response.data.success && response.data.user.email) {
+        setContactData(prev => ({
+          ...prev,
+          email: response.data.user.email
+        }));
+      }
+    } catch (error) {
+      // Could not fetch user profile
+    }
+  };
+
+  // Build final order data
+  const buildOrderData = () => {
+    let finalAddress;
+    
+    if (selectedAddress) {
+      // Use saved address - get name directly from saved address, not contactData
+      const nameParts = selectedAddress.userName ? selectedAddress.userName.split(' ') : ['', ''];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+  
+      finalAddress = {
+        firstName: firstName,
+        lastName: lastName,
+        email: contactData.email, // Email from user profile
+        phone: selectedAddress.phone, // Phone from saved address
+        street: selectedAddress.street,
+        city: selectedAddress.city,
+        state: selectedAddress.state,
+        zipcode: selectedAddress.pincode,
+        country: "India"
+      };
+    } else {
+    
+      finalAddress = {
+        ...contactData,
+        ...addressData
+      };
+    }
+    
+    return finalAddress;
   };
 
   const placeOrder = async (event) => {
@@ -37,40 +141,69 @@ const PlaceOrder = () => {
       return;
     }
 
-    if (!food_list || !cartItem) {
-      toast.error("Your cart is empty.");
+    const finalAddress = buildOrderData();
+
+    // Validate form data
+    if (!finalAddress.firstName || !finalAddress.lastName || !finalAddress.email || !finalAddress.phone) {
+      toast.error("Please fill in all contact information.");
+      return;
+    }
+
+    if (!finalAddress.street || !finalAddress.city || !finalAddress.state || !finalAddress.zipcode) {
+      toast.error("Please fill in all address information.");
       return;
     }
 
     let orderItems = [];
     food_list.forEach((item) => {
       if (cartItem[item._id] && cartItem[item._id] > 0) {
-        orderItems.push({ ...item, quantity: cartItem[item._id] });
+        orderItems.push({ 
+          foodId: item._id,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          quantity: cartItem[item._id] 
+        });
       }
     });
 
+    if (orderItems.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+
+    const subtotal = getTotalCartAmount();
+    const deliveryFee = subtotal > 0 ? (subtotal > 199 ? 0 : 40) : 0;
+
     const orderData = {
-      userId: token,
       items: orderItems,
-      amount: getTotalCartAmount() + 40,
-      address: data,
+      amount: subtotal + deliveryFee,
+      address: finalAddress,
       payment: false,
     };
 
     try {
+      
       let response = await axios.post(url + "/api/order/place", orderData, {
         headers: { token },
       });
 
       if (response.data.success) {
         const { amount, orderId } = response.data;
-        setOrderCreatedData({ amount, orderId });
+        setOrderCreatedData({ 
+          amount, 
+          orderId, 
+          address: finalAddress,
+          items: orderItems 
+        });
         setOpenRazorpay(true);
       } else {
-        toast.error(`Order failed. Please try again.`);
+        console.error("Order failed:", response.data.message);
+        toast.error(response.data.message || "Order failed. Please try again.");
       }
     } catch (error) {
-      toast.error("An error occurred while placing the order. Please try again.");
+      console.error("Order placement error:", error);
+      toast.error(error.response?.data?.message || "An error occurred while placing the order. Please try again.");
     }
   };
 
@@ -78,195 +211,45 @@ const PlaceOrder = () => {
   const deliveryFee = subtotal > 0 ? (subtotal > 199 ? 0 : 40) : 0;
   const total = subtotal + deliveryFee;
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (!token) {
       navigate("/cart");
     } else if (getTotalCartAmount() === 0) {
       navigate("/cart");
+    } else {
+      // Auto-populate user email if available
+      fetchUserProfile();
     }
   }, [token]);
-
-  // --------------------- Razorpat Start -----------------------------------------
-  function loadScript(src) {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = src;
-      script.onload = () => {
-        resolve(true);
-      };
-      script.onerror = () => {
-        resolve(false);
-      };
-      document.body.appendChild(script);
-    });
-  }
-
-  async function displayRazorpay() {
-    const res = await loadScript(
-      "https://checkout.razorpay.com/v1/checkout.js"
-    );
-
-    if (!res) {
-      toast.error("Razorpay failed to load. Please try again later.");
-      return;
-    }
-
-    const {
-      data: { razorpay_key_id },
-    } = await axios.get(url + "/api/payment/get-razorpay-key-id", {
-      headers: { token },
-    });
-    // --------------------------------------
-
-    const {
-      data: { order_id, currency, amount },
-    } = await axios.post(
-      url + "/api/payment/order",
-      {
-        amount: orderCreatedData?.amount,
-        orderId: orderCreatedData?.orderId,
-      },
-      {
-        headers: { token },
-      }
-    );
-
-    // --------------------------------------
-
-    const options = {
-      key: razorpay_key_id, // Enter the Key ID generated from the Dashboard
-      amount: amount,
-      currency: currency,
-      name: "Yumm Express",
-      description: "Transaction",
-      order_id: order_id,
-      handler: async function (response) {
-        // console.log(response, "response");
-        // toast.success("Payment successful");
-
-        const verifyPayment = await axios.post(
-          url + "/api/payment/verify",
-          {
-            orderId: orderCreatedData?.orderId,
-          },
-          {
-            headers: { token },
-          }
-        );
-        if (verifyPayment.data.success) {
-          toast.success("Order placed successfully!");
-          navigate("/myorders");
-        }
-      },
-      prefill: {
-        name: "Navneet Singh",
-        email: "navneetsingh1825@gmail.com",
-        contact: "86760769369",
-      },
-      notes: {
-        address: "Razorpay Corporate Office",
-      },
-      theme: {
-        color: "#038C3E",
-      },
-    };
-
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
-  }
-
-  useEffect(() => {
-    if (openRazorpay && orderCreatedData) {
-      displayRazorpay();
-    }
-  }, [openRazorpay]);
-
-  // --------------------- Razorpat End -----------------------------------------
 
   return (
     <form onSubmit={placeOrder} className="place-order">
       <div className="place-order-left">
         <p className="title">Delivery Information</p>
-        <div className="multi-fields">
-          <input
-            name="firstName"
-            onChange={onChangeHandler}
-            value={data.firstName}
-            type="text"
-            placeholder="First Name"
-            required
-          />
-          <input
-            name="lastName"
-            onChange={onChangeHandler}
-            value={data.lastName}
-            type="text"
-            placeholder="Last Name"
-            required
-          />
-        </div>
-        <input
-          name="email"
-          onChange={onChangeHandler}
-          value={data.email}
-          type="email"
-          placeholder="Email address"
-          required
+        
+        {/* Address Selection Component */}
+        <AddressSelector
+          onAddressSelect={handleAddressSelect}
+          selectedAddressId={selectedAddress?._id || null}
+          allowManualEntry={true}
         />
-        <input
-          name="street"
-          onChange={onChangeHandler}
-          value={data.street}
-          type="text"
-          placeholder="Street"
-          required
-        />
-        <div className="multi-fields">
-          <input
-            name="city"
-            onChange={onChangeHandler}
-            value={data.city}
-            type="text"
-            placeholder="City"
-            required
+
+        {/* Contact Information - Show only when using manual entry */}
+        {!selectedAddress && (
+          <ContactForm
+            contactData={contactData}
+            onContactChange={setContactData}
+            selectedAddress={selectedAddress}
           />
-          <input
-            name="state"
-            onChange={onChangeHandler}
-            value={data.state}
-            type="text"
-            placeholder="State"
-            required
+        )}
+
+        {/* Manual Address Form - Show only when no address is selected */}
+        {!selectedAddress && (
+          <ManualAddressForm
+            addressData={addressData}
+            onAddressChange={setAddressData}
           />
-        </div>
-        <div className="multi-fields">
-          <input
-            name="zipcode"
-            onChange={onChangeHandler}
-            value={data.zipcode}
-            type="text"
-            placeholder="Pin Code"
-            required
-          />
-          <input
-            name="country"
-            onChange={onChangeHandler}
-            value={data.country}
-            type="text"
-            placeholder="Country"
-            required
-          />
-        </div>
-        <input
-          name="phone"
-          onChange={onChangeHandler}
-          value={data.phone}
-          type="text"
-          placeholder="Phone"
-          required
-        />
+        )}
       </div>
 
       <div className="place-order-right">
@@ -293,6 +276,15 @@ const PlaceOrder = () => {
           </button>
         </div>
       </div>
+      
+      {/* Razorpay Payment Component */}
+      <RazorpayPayment
+        isOpen={openRazorpay}
+        orderData={orderCreatedData}
+        onPaymentSuccess={handlePaymentSuccess}
+        onPaymentError={handlePaymentError}
+        onClose={handlePaymentClose}
+      />
     </form>
   );
 };

@@ -32,6 +32,7 @@
   border-bottom: 1px solid #eee;
   background: #f9f9f9;
   transition: all 0.3s ease-in-out;
+  gap: 10px;
 }
 
 .list-table-format.title {
@@ -111,7 +112,7 @@
   }
 }
 
-/* Small Screens */
+/* Small Screens - Card Layout */
 @media (max-width: 600px) {
   .list {
     width: 98%;
@@ -119,10 +120,16 @@
   }
 
   .list-table-format {
-    grid-template-columns: 1fr 2fr;
-    gap: 10px;
-    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
     text-align: left;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
 
   .list-table-format.title {
@@ -130,15 +137,18 @@
   }
 
   .list-table-format img {
-    width: 40px;
-    height: 40px;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 8px;
   }
 
   .list-table-format p {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .cursor {
-    font-size: 13px;
+    font-size: 14px;
+    align-self: flex-end;
   }
 }

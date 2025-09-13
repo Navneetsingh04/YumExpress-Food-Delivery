@@ -58,7 +58,6 @@ const registerUser = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -78,11 +77,191 @@ const loginUser = async (req, res) => {
     }
 
     const token = createToken(user._id);
-    return res.json({ success: true, token }); // ✅ Ensure return stops execution
+    return res.json({ success: true, token }); 
   } catch (error) {
-    console.log(error);
-    return res.json({ success: false, message: "Error!" }); // ✅ Error response
+    return res.json({ success: false, message: "Error!" });
   }
 };
 
-export { loginUser, registerUser };
+// Get user profile
+const getUserProfile = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.body.userId).select('-password');
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+    return res.json({ success: true, user });
+  } catch (error) {
+    return res.json({ success: false, message: "Error fetching user profile" });
+  }
+};
+
+// Add new address
+const addAddress = async (req, res) => {
+  try {
+    const { name, userName, street, city, state, pincode, phone, isDefault } = req.body;
+    const userId = req.body.userId;
+
+    if (!name || !userName || !street || !city || !state || !pincode || !phone) {
+      return res.json({ success: false, message: "All fields are required" });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // If this is set as default, make all other addresses non-default
+    if (isDefault) {
+      user.addresses.forEach(address => {
+        address.isDefault = false;
+      });
+    }
+
+    // Add new address
+    const newAddress = {
+      name,
+      userName,
+      street,
+      city,
+      state,
+      pincode,
+      phone,
+      isDefault: isDefault || user.addresses.length === 0
+    };
+
+    user.addresses.push(newAddress);
+    await user.save();
+
+    return res.json({ 
+      success: true, 
+      message: "Address added successfully",
+      addresses: user.addresses 
+    });
+  } catch (error) {
+    return res.json({ success: false, message: "Error adding address" });
+  }
+};
+
+// Update address
+const updateAddress = async (req, res) => {
+  try {
+    const { addressId, name, userName, street, city, state, pincode, phone, isDefault } = req.body;
+    const userId = req.body.userId;
+
+    ("Update address request:", req.body);
+
+    if (!addressId || !name || !userName || !street || !city || !state || !pincode || !phone) {
+      return res.json({ success: false, message: "All fields are required" });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    const addressIndex = user.addresses.findIndex(addr => addr._id.toString() === addressId);
+    if (addressIndex === -1) {
+      return res.json({ success: false, message: "Address not found" });
+    }
+
+    // If this is set as default, make all other addresses non-default
+    if (isDefault) {
+      user.addresses.forEach(address => {
+        address.isDefault = false;
+      });
+    }
+
+    // Update the address
+    user.addresses[addressIndex] = {
+      _id: user.addresses[addressIndex]._id,
+      name,
+      userName,
+      street,
+      city,
+      state,
+      pincode,
+      phone,
+      isDefault
+    };
+
+    await user.save();
+
+    return res.json({ 
+      success: true, 
+      message: "Address updated successfully",
+      addresses: user.addresses 
+    });
+  } catch (error) {
+    return res.json({ success: false, message: "Error updating address" });
+  }
+};
+
+// Delete address
+const deleteAddress = async (req, res) => {
+  try {
+    const { addressId } = req.body;
+    const userId = req.body.userId;
+
+    if (!addressId) {
+      return res.json({ success: false, message: "Address ID is required" });
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    const addressIndex = user.addresses.findIndex(addr => addr._id.toString() === addressId);
+    if (addressIndex === -1) {
+      return res.json({ success: false, message: "Address not found" });
+    }
+
+    const wasDefault = user.addresses[addressIndex].isDefault;
+    user.addresses.splice(addressIndex, 1);
+
+    // If the deleted address was default and there are other addresses, make the first one default
+    if (wasDefault && user.addresses.length > 0) {
+      user.addresses[0].isDefault = true;
+    }
+
+    await user.save();
+
+    return res.json({ 
+      success: true, 
+      message: "Address deleted successfully",
+      addresses: user.addresses 
+    });
+  } catch (error) {
+    return res.json({ success: false, message: "Error deleting address" });
+  }
+};
+
+// Get all addresses
+const getAddresses = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await userModel.findById(userId).select('addresses');
+    
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    return res.json({ 
+      success: true, 
+      addresses: user.addresses 
+    });
+  } catch (error) {
+    return res.json({ success: false, message: "Error fetching addresses" });
+  }
+};
+
+export { 
+  loginUser, 
+  registerUser, 
+  getUserProfile, 
+  addAddress, 
+  updateAddress, 
+  deleteAddress, 
+  getAddresses 
+};

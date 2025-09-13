@@ -10,23 +10,22 @@ import Cart from "./Pages/Cart/Cart";
 import PlaceOrder from "./Pages/PlaceOrder/PlaceOrder";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Verify from "./Pages/Verify/Verify";
-import MyOrders from "./Pages/MyOrders/MyOrders";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Profile from "./Pages/Profile/Profile";
+import { Toaster } from "react-hot-toast";
+import StoreContextProvider from "./context/StoreContext";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
-  const location = useLocation(); // To detect route changes
+  const location = useLocation();
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
-  return (
-    <>
-      <ToastContainer position="top-right" autoClose={3000} />
 
-      {showLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}
+  return (
+    <StoreContextProvider>
+      {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
+
       <div className="app">
         <Navbar setShowLogin={setShowLogin} />
         <Routes>
@@ -37,11 +36,24 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/verify" element={<Verify />} />
-          <Route path="/myorders" element={<MyOrders />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
       <Footer />
-    </>
+        <Toaster
+        toastOptions={{
+          duration: 4000,
+          style: {
+            border: "1px solid #1a73e8", 
+            background: "#e8f0fe",
+            color: "#1a73e8", 
+            padding: "12px 16px",
+            borderRadius: "8px",
+            fontSize: "14px",
+          },
+        }}
+      />
+    </StoreContextProvider>
   );
 };
 

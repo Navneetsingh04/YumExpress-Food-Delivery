@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { assets } from "../../assets/assets";
 
 const Cart = () => {
   const {
@@ -14,12 +15,34 @@ const Cart = () => {
   } = useContext(StoreContext);
 
   const navigate = useNavigate();
+
+  // Check if cart is empty
+  const isCartEmpty = getTotalCartAmount() === 0;
+
   return (
     <div className="cart">
       <div className="free-delivery-info">
         <p>Orders above ₹199 and get free delivery!</p>
       </div>
-      <div className="cart-items">
+      
+      {isCartEmpty ? (
+        <div className="empty-cart">
+          <div className="empty-cart-content">
+            <img src={assets.abandoned_cart} alt="Empty Cart" className="empty-cart-image" />
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added anything to your cart yet.</p>
+            <p>Start shopping to fill it up!</p>
+            <button 
+              className="continue-shopping-btn"
+              onClick={() => navigate('/')}
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="cart-items">
         <div className="cart-items-title">
           <p>Items</p>
           <p>Title</p>
@@ -106,6 +129,8 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

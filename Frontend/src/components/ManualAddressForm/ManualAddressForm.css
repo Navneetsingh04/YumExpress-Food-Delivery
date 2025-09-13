@@ -1,0 +1,58 @@
+.manual-address-form {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+}
+
+.manual-address-form h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.multi-fields {
+  display: flex;
+  gap: 10px;
+}
+
+.manual-address-form input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.manual-address-form input:focus {
+  outline: none;
+  border-color: #ff6347;
+  box-shadow: 0 0 0 2px rgba(255, 99, 71, 0.1);
+}
+
+.manual-address-form input::placeholder {
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .manual-address-form {
+    padding: 15px;
+  }
+  
+  .multi-fields {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .manual-address-form input {
+    padding: 10px;
+    font-size: 13px;
+  }
+}

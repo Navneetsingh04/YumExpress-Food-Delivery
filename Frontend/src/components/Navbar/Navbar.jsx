@@ -3,6 +3,7 @@ import "./Navbar.css";
 import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
+import { HandbagIcon, LogOut, SearchIcon, ShoppingBag, User, UserCircle2 } from "lucide-react";
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
@@ -82,11 +83,11 @@ const Navbar = ({ setShowLogin }) => {
               autoFocus
             />
           )}
-          <img src={assets.search_icon} alt="Search" onClick={toggleSearch} className="search-icon" />
+          <SearchIcon size={30} onClick={toggleSearch} /> 
         </div>
         <div className="navbar-search-icon">
           <Link to="/Cart">
-            <img src={assets.basket_icon} alt="Cart" />
+            <HandbagIcon size={30}/>
           </Link>
           {getTotalCartAmount() > 0 && <div className="dot"></div>}
         </div>
@@ -94,16 +95,26 @@ const Navbar = ({ setShowLogin }) => {
           <button onClick={() => setShowLogin(true)}>Sign In</button>
         ) : (
           <div className="navbar-profile" onClick={toggleDropdown} ref={dropdownRef}>
-            <img src={assets.profile_icon} alt="Profile" />
+            <UserCircle2 size={30}/>
             {showDropdown && (
               <ul className="navbar-profile-dropdown">
                 <li
                   onClick={() => {
-                    navigate("/myorders");
+                    navigate("/profile");
                     setShowDropdown(false);
                   }}
                 >
-                  <img src={assets.bag_icon} alt="Orders" />
+                  
+                  <User size={20}/>
+                  <p>Profile</p>
+                </li>
+                <li
+                  onClick={() => {
+                    navigate("/profile?tab=orders");
+                    setShowDropdown(false);
+                  }}
+                >
+                  <ShoppingBag size={20}/>
                   <p>Orders</p>
                 </li>
                 <hr />
@@ -113,7 +124,7 @@ const Navbar = ({ setShowLogin }) => {
                     setShowDropdown(false);
                   }}
                 >
-                  <img src={assets.logout_icon} alt="Logout" />
+                  <LogOut size={20}/>
                   <p>Logout</p>
                 </li>
               </ul>

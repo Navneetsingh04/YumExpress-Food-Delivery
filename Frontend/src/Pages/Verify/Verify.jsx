@@ -8,8 +8,6 @@ const Verify = () => {
   const success = searchParams.get("success");
   const orderId = searchParams.get("OrderId");
 
-  // console.log(success,orderId);
-
   const { url } = useContext(StoreContext);
   const navigate = useNavigate();
   const verifyPayment = async () => {

@@ -42,6 +42,124 @@
     margin-top: 30px;
 }
 
+/* Address Selection Styles */
+.address-selection {
+    margin-bottom: 30px;
+}
+
+.saved-addresses h3,
+.manual-address-form h3,
+.contact-info-form h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.address-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.address-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.address-option:hover {
+    border-color: #ff6b35;
+    background: #fff8f5;
+}
+
+.address-option.selected {
+    border-color: #ff6b35;
+    background: #fff8f5;
+}
+
+.address-radio {
+    margin-top: 2px;
+}
+
+.address-radio input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff6b35;
+    cursor: pointer;
+}
+
+.address-details {
+    flex: 1;
+}
+
+.address-details h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.address-details .user-name {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #ff6b35;
+    font-weight: 500;
+    background: #fff8f5;
+    padding: 3px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.address-details p {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.place-order .default-badge {
+    display: inline-block;
+    position: static;
+    background: #ff6b35;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-left: 0;
+    margin-right: 0;
+    top: auto;
+    right: auto;
+}
+
+.manual-entry-option {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.manual-address-form,
+.contact-info-form {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e1e1e1;
+}
+
+.manual-address-form input,
+.contact-info-form input {
+    background: white;
+}
+
 @media (max-width: 768px) {
     .place-order {
         flex-direction: column;
@@ -52,5 +170,17 @@
     .place-order-left,
     .place-order-right {
         max-width: 100%;
+    }
+
+    .address-option {
+        padding: 12px;
+    }
+
+    .address-details h4 {
+        font-size: 15px;
+    }
+
+    .address-details p {
+        font-size: 13px;
     }
 }

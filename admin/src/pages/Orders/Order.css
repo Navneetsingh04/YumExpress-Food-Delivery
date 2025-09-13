@@ -117,3 +117,37 @@
         margin: 0 auto;
     }
 }
+
+/* Loading and Error States */
+.loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #666;
+    margin: 30px;
+}
+
+.error-message {
+    text-align: center;
+    padding: 20px;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    color: #c33;
+    font-size: 16px;
+    margin: 30px;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 40px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    color: #666;
+    margin: 30px;
+}
+
+.no-orders p {
+    font-size: 18px;
+    margin: 0;
+}

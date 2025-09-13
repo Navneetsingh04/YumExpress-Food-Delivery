@@ -5,24 +5,30 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItem, setCartItem] = useState({});
-  const url = "https://yumexpress-backend.onrender.com";
+  const url = import.meta.env.VITE_URL;
   const [token, setToken] = useState("");
   const [food_list, setFoodList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredFoodList, setFilteredFoodList] = useState([]);
+  const [isLoadingFood, setIsLoadingFood] = useState(true);
 
   const addToCart = async (itemId) => {
+   
     setCartItem((prev) => ({
       ...prev,
       [itemId]: prev[itemId] ? prev[itemId] + 1 : 1,
     }));
     if (token) {
       try {
-        await axios.post(
+        const response = await axios.post(
           url + "/api/cart/add",
           { itemId },
           { headers: { token } }
         );
+  
+        if (!response.data.success) {
+          console.error("Failed to add to cart:", response.data.message);
+        }
       } catch (error) {
         console.error("Error adding item to cart:", error);
       }
@@ -41,11 +47,15 @@ const StoreContextProvider = (props) => {
     });
     if (token) {
       try {
-        await axios.post(
+        const response = await axios.post(
           url + "/api/cart/remove",
           { itemId },
           { headers: { token } }
         );
+        
+        if (!response.data.success) {
+          console.error("Failed to remove from cart:", response.data.message);
+        }
       } catch (error) {
         console.error("Error removing item from cart:", error);
       }
@@ -56,7 +66,9 @@ const StoreContextProvider = (props) => {
     let totalAmount = 0;
     for (const item in cartItem) {
       if (cartItem[item] > 0) {
-        let itemInfo = food_list.find((product) => product._id === item);
+        let itemInfo = food_list.find(
+          (product) => String(product._id) === String(item)
+        );
         if (itemInfo) {
           totalAmount += itemInfo.price * cartItem[item];
         }
@@ -67,15 +79,24 @@ const StoreContextProvider = (props) => {
 
   const fetchFoodList = async () => {
     try {
+      setIsLoadingFood(true);
       const response = await axios.get(url + "/api/food/list");
       if (response.data.success) {
-        setFoodList(response.data.data);
-        setFilteredFoodList(response.data.data); // Initialize filtered list
+        const allFoodItems = response.data.data;
+        
+        // Shuffle array and take only 32 random items
+        const shuffledItems = [...allFoodItems].sort(() => Math.random() - 0.5);
+        const randomFoodItems = shuffledItems.slice(0, 32);
+        
+        setFoodList(randomFoodItems);
+        setFilteredFoodList(randomFoodItems);
       } else {
-        console.error("Error fetching food list");
+        console.error("Error fetching food list:", response.data.message);
       }
     } catch (error) {
       console.error("API Error fetching food list:", error);
+    } finally {
+      setIsLoadingFood(false);
     }
   };
 
@@ -89,7 +110,7 @@ const StoreContextProvider = (props) => {
       if (response.data.success) {
         setCartItem(response.data.cartData);
       } else {
-        console.error("Error fetching cart data");
+        console.error("Error fetching cart data:", response.data.message);
       }
     } catch (error) {
       console.error("API Error fetching cart data:", error);
@@ -101,19 +122,26 @@ const StoreContextProvider = (props) => {
     setSearchTerm(term);
   };
 
+  // Run once on mount
   useEffect(() => {
     const loadData = async () => {
       await fetchFoodList();
       const storedToken = localStorage.getItem("token");
       if (storedToken) {
         setToken(storedToken);
-        await loadCartData(storedToken);
       }
     };
     loadData();
-  }, [token]); // Depend on `token` to re-fetch data when it changes
+  }, []);
 
-  // Update filtered list whenever search term or food list changes
+  // Reload cart data when token changes
+  useEffect(() => {
+    if (token) {
+      loadCartData(token);
+    }
+  }, [token]);
+
+  // Update filtered food list when search changes
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredFoodList(food_list);
@@ -141,6 +169,7 @@ const StoreContextProvider = (props) => {
     url,
     token,
     setToken,
+    isLoadingFood,
   };
 
   return (

@@ -1,0 +1,110 @@
+.address-selector {
+  margin-bottom: 20px;
+}
+
+.address-selector-loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.saved-addresses h3 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 16px;
+}
+
+.address-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.address-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  border: 2px solid #e5e5e5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.address-option:hover {
+  border-color: #ff6347;
+  background-color: #fff8f6;
+}
+
+.address-option.selected {
+  border-color: #ff6347;
+  background-color: #fff8f6;
+  box-shadow: 0 2px 8px rgba(255, 99, 71, 0.2);
+}
+
+.address-radio {
+  margin-top: 2px;
+}
+
+.address-radio input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.address-details {
+  flex: 1;
+}
+
+.user-name {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.address-details p {
+  margin: 0 0 6px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.address-details h4 {
+  margin: 0 0 6px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.default-badge {
+  display: inline-block;
+  background: #4CAF50;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.manual-entry-option {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e5e5e5;
+}
+
+@media (max-width: 768px) {
+  .address-option {
+    padding: 12px;
+  }
+  
+  .address-details p {
+    font-size: 13px;
+  }
+  
+  .user-name {
+    font-size: 13px;
+  }
+}

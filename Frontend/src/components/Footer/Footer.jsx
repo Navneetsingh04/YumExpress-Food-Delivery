@@ -2,7 +2,6 @@ import React from "react";
 import "./Footer.css";
 import { assets } from "../../assets/assets";
 import { Link, useLocation } from "react-router-dom";
-import AppDownload from "../AppDownload/AppDownload";
 
 const Footer = () => {
   const location = useLocation();
@@ -30,7 +29,7 @@ const Footer = () => {
             </p>
             <div className="footer-social-icon">
               <a
-                href="https://www.facebook.com"
+                href="https://www.facebook.com/profile.php?id=61580355245377"
                 target="_blank"
                 rel="noopener noreferrer"
               >

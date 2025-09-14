@@ -24,14 +24,24 @@ const port = process.env.PORT || 4000 ;
 
 // middleware
 app.use(express.json());
-app.use(cors());
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.ADMIN_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) =>
+    !origin || allowedOrigins.includes(origin)
+      ? callback(null, true)
+      : callback(new Error("Not allowed by CORS")),
+  credentials: true,
+}));
 
 // db connection
 connectDB();
 
 // api endpoint
 app.use("/api/food", foodRouter);
-app.use("/images", express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);

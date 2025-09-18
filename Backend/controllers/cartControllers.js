@@ -43,7 +43,7 @@ const removeFromCart = async (req, res) => {
     if (cartData[itemId] > 0) {
       cartData[itemId] -= 1;
       if (cartData[itemId] === 0) {
-        delete cartData[itemId]; // Remove if quantity is 0
+        delete cartData[itemId]; 
       }
     }
 
@@ -72,4 +72,23 @@ const getCart = async (req, res) => {
   }
 };
 
-export { addToCart, removeFromCart, getCart };
+// Clear user cart
+const clearCart = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.json({ success: false, message: "userId required" });
+    }
+
+    let user = await userModel.findById(userId);
+    if (!user) return res.json({ success: false, message: "User not found" });
+
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+    res.json({ success: true, message: "Cart cleared successfully" });
+  } catch (error) {
+    res.json({ success: false, message: "Error clearing cart" });
+  }
+};
+
+export { addToCart, removeFromCart, getCart, clearCart };

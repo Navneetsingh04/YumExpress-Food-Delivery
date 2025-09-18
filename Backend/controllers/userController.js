@@ -256,6 +256,52 @@ const getAddresses = async (req, res) => {
   }
 };
 
+const adminLogin = async (req, res) => {
+  const { email, password, adminSecretKey } = req.body;
+  try {
+    const requiredSecretKey = process.env.ADMIN_SECRET_KEY;
+    if (adminSecretKey !== requiredSecretKey) {
+      return res.json({ 
+        success: false, 
+        message: "Invalid admin secret key. Access denied." 
+      });
+    }
+
+    const user = await userModel.findOne({ email });
+    
+    if (!user) {
+      return res.json({ success: false, message: "Admin not found" });
+    }
+    
+    if (user.role !== "admin") {
+      return res.json({ 
+        success: false, 
+        message: "Access denied. Admin privileges required." 
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid admin credentials" });
+    }
+
+    const token = createToken(user._id);
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      },
+      message: "Admin login successful"
+    });
+  } catch (error) {
+    res.json({ success: false, message: "Error during admin login" });
+  }
+};
+
 export { 
   loginUser, 
   registerUser, 
@@ -263,5 +309,6 @@ export {
   addAddress, 
   updateAddress, 
   deleteAddress, 
-  getAddresses 
+  getAddresses,
+  adminLogin
 };

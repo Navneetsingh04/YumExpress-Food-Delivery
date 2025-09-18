@@ -25,6 +25,11 @@ const orderSchema = new mongoose.Schema(
     status: { type: String, default: "Food Processing" },
     date: { type: Date, default: Date.now },
     payment: { type: Boolean, default: false },
+    paymentDetails: {
+      razorpay_payment_id: { type: String },
+      razorpay_order_id: { type: String },
+      razorpay_signature: { type: String }
+    },
   },
   { timestamps: true }
 );

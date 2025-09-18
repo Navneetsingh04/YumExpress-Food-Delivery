@@ -7,6 +7,7 @@ import dotenv from  "dotenv";
 import cartRouter from "./routes/cartRouter.js";
 import orderRouter from "./routes/orderRouter.js";
 import paymentRouter from "./routes/paymentRouter.js";
+import analyticsRouter from "./routes/analyticsRouter.js";
 
 // Configure environment variables
 dotenv.config();
@@ -46,6 +47,7 @@ app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/payment", paymentRouter);
+app.use("/api/analytics", analyticsRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");

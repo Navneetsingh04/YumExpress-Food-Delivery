@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
+import adminAuthMiddleware from "../middleware/adminAuth.js";
 import fs from "fs";
 import {
   addFood,
@@ -12,7 +13,7 @@ const foodRouter = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 
-foodRouter.post("/add", upload.single("image"), async (req, res, next) => {
+foodRouter.post("/add", adminAuthMiddleware, upload.single("image"), async (req, res, next) => {
   try {
     const filePath = req.file.path;
 
@@ -31,6 +32,6 @@ foodRouter.post("/add", upload.single("image"), async (req, res, next) => {
 }, addFood);
 
 foodRouter.get("/list", listFood);
-foodRouter.post("/remove", removeFood);
+foodRouter.post("/remove", adminAuthMiddleware, removeFood);
 
 export default foodRouter;

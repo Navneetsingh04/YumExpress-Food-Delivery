@@ -68,7 +68,6 @@ const getOrdersOverview = async (req, res) => {
       }
     }).select('status createdAt').lean();
 
-    // Process data in JavaScript instead of aggregation
     const totalOrders = orders.length;
     
     // Count orders by status
@@ -84,7 +83,7 @@ const getOrdersOverview = async (req, res) => {
       count
     }));
 
-    // Create trend data - only show days with actual orders
+    // only show days with actual orders
     const trendData = {};
     orders.forEach(order => {
       const dateKey = formatDateForPeriod(order.createdAt, period);
@@ -120,8 +119,6 @@ const getRevenueData = async (req, res) => {
   try {
     const { period = 'daily' } = req.query;
     const { startDate, endDate } = getDateRange(period);
-
-    // Get all orders for the period
     const orders = await orderModel.find({
       createdAt: { 
         $gte: startDate,
@@ -129,7 +126,6 @@ const getRevenueData = async (req, res) => {
       }
     }).select('amount payment createdAt').lean();
 
-    // Calculate totals in JavaScript
     let totalRevenue = 0;
     let paidRevenue = 0;
     let totalOrders = orders.length;
@@ -145,8 +141,6 @@ const getRevenueData = async (req, res) => {
         paidRevenue += amount;
         paidOrders++;
       }
-
-      // Trend data - only create entries for days with actual orders
       const dateKey = formatDateForPeriod(order.createdAt, period);
       if (!trendData[dateKey]) {
         trendData[dateKey] = {
@@ -163,8 +157,6 @@ const getRevenueData = async (req, res) => {
         trendData[dateKey].paidOrders += 1;
       }
     });
-
-    // Convert trend data to array
     const revenueTrend = Object.entries(trendData)
       .map(([date, data]) => ({ _id: date, ...data }))
       .sort((a, b) => a._id.localeCompare(b._id));
@@ -231,7 +223,6 @@ const getCustomerAnalytics = async (req, res) => {
         newUsersLastMonth++;
       }
 
-      // Growth trend - only show days with actual new users
       const daysBack = period === 'daily' ? 7 : 30;
       const daysAgo = new Date(now.getTime() - (daysBack - 1) * 24 * 60 * 60 * 1000);
       daysAgo.setHours(0, 0, 0, 0);
@@ -242,13 +233,11 @@ const getCustomerAnalytics = async (req, res) => {
       }
     });
 
-    // Get active users (users who placed orders this month)
     const activeUserIds = await orderModel.distinct('userId', {
       createdAt: { $gte: startOfMonth }
     });
     const activeUsers = activeUserIds.length;
 
-    // Get returning customers (users with more than 1 order)
     const orderCounts = await orderModel.aggregate([
       {
         $group: {
@@ -260,7 +249,6 @@ const getCustomerAnalytics = async (req, res) => {
     
     const returningCustomers = orderCounts.filter(user => user.orderCount > 1).length;
 
-    // Convert growth data to array
     const customerGrowth = Object.entries(growthData)
       .map(([date, newUsers]) => ({ _id: date, newUsers }))
       .sort((a, b) => a._id.localeCompare(b._id));
@@ -319,7 +307,6 @@ const getTopMetrics = async (req, res) => {
           const price = item.price || 0;
           const revenue = quantity * price;
 
-          // Item stats
           if (!itemStats[foodId]) {
             const foodInfo = foodMap[foodId];
             itemStats[foodId] = {
@@ -335,8 +322,6 @@ const getTopMetrics = async (req, res) => {
           }
           itemStats[foodId].totalQuantity += quantity;
           itemStats[foodId].totalRevenue += revenue;
-
-          // Category stats
           const category = foodMap[foodId]?.category || 'Unknown';
           if (!categoryStats[category]) {
             categoryStats[category] = {
@@ -352,8 +337,6 @@ const getTopMetrics = async (req, res) => {
         });
       }
     });
-
-    // Convert to arrays and sort
     const topSellingItems = Object.values(itemStats)
       .sort((a, b) => b.totalQuantity - a.totalQuantity)
       .slice(0, 10)

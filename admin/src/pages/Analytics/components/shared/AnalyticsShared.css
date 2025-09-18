@@ -1,0 +1,52 @@
+/* Shared Analytics Styles */
+
+/* Icon Styles */
+.inline-icon-header {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  align-items: center;
+  color: #3b82f6;
+}
+
+.inline-icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.375rem;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.metric-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  margin-right: 0.25rem;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.option-icon {
+  display: none; /* Hide icons in select options as they don't display properly */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .inline-icon-header {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .inline-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .metric-icon {
+    width: 14px;
+    height: 14px;
+  }
+}

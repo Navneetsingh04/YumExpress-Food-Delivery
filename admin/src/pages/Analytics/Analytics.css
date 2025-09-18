@@ -1,0 +1,324 @@
+/* Main Analytics Container Styles */
+
+.analytics {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  width: 100%;
+  padding: 1.5rem;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Analytics Grid Layout */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Chart Container Base Styles */
+.analytics-grid > div {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+}
+
+/* Full-width components */
+.analytics-grid .orders-chart,
+.analytics-grid .revenue-chart {
+  grid-column: 1 / -1;
+}
+
+/* Two-column layout for smaller charts */
+.analytics-grid .order-status-chart,
+.analytics-grid .customer-growth-chart {
+  grid-column: span 1;
+}
+
+/* Hover effects for better interactivity */
+.analytics-grid > div:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Chart Title Styles */
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chart-title .icon {
+  width: 24px;
+  height: 24px;
+  color: #3b82f6;
+}
+
+/* Loading and Error States */
+.analytics-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background: white;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+
+.analytics-error {
+  text-align: center;
+  padding: 2.5rem;
+  background: white;
+  border-radius: 12px;
+  margin: 1.5rem 0;
+  border: 1px solid #fee2e2;
+  background-color: #fef2f2;
+}
+
+.analytics-error h3 {
+  color: #dc2626;
+  margin-bottom: 0.5rem;
+}
+
+.analytics-error p {
+  color: #991b1b;
+  margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+
+/* Extra Large Screens - 1600px+ */
+@media (min-width: 1600px) {
+  .analytics {
+    padding: 2rem;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+  
+  .analytics-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .analytics-grid .revenue-chart {
+    grid-column: 1 / -1;
+  }
+  
+  .analytics-grid .orders-chart {
+    grid-column: 1 / 3;
+  }
+}
+
+/* Large Screens - 1400px */
+@media (max-width: 1400px) {
+  .analytics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+/* Medium-Large Screens - 1200px */
+@media (max-width: 1200px) {
+  .analytics {
+    padding: 1.25rem;
+  }
+  
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  
+  .analytics-grid .orders-chart,
+  .analytics-grid .revenue-chart {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Medium Screens - 1024px */
+@media (max-width: 1024px) {
+  .analytics {
+    padding: 1rem;
+  }
+  
+  .analytics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .analytics-grid > div {
+    padding: 1.25rem;
+  }
+  
+  /* All components become full width on tablets */
+  .analytics-grid .order-status-chart,
+  .analytics-grid .customer-growth-chart,
+  .analytics-grid .orders-chart,
+  .analytics-grid .revenue-chart {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Small-Medium Screens - 768px */
+@media (max-width: 768px) {
+  .analytics {
+    padding: 0.75rem;
+  }
+  
+  .analytics-grid {
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  
+  .analytics-grid > div {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .chart-title {
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Reduce hover effects on mobile */
+  .analytics-grid > div:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Small Screens - 480px */
+@media (max-width: 480px) {
+  .analytics {
+    padding: 0.5rem;
+    min-height: auto;
+  }
+  
+  .analytics-grid {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .analytics-grid > div {
+    padding: 0.75rem;
+    border-radius: 6px;
+  }
+  
+  .chart-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Disable transitions on very small screens for better performance */
+  .analytics-grid > div {
+    transition: none;
+  }
+}
+
+/* Extra Small Screens - 360px */
+@media (max-width: 360px) {
+  .analytics {
+    padding: 0.25rem;
+  }
+  
+  .analytics-grid {
+    gap: 0.25rem;
+  }
+  
+  .analytics-grid > div {
+    padding: 0.5rem;
+  }
+}
+
+/* Scrollbar Styling */
+.analytics::-webkit-scrollbar {
+  width: 6px;
+}
+
+.analytics::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.analytics::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.analytics::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive Utility Classes */
+.mobile-hidden {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .analytics-grid > div:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Increase tap target sizes */
+  button, .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .analytics-grid > div {
+    border-width: 0.5px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .analytics {
+    background: white;
+    padding: 0;
+  }
+  
+  .analytics-grid {
+    display: block;
+  }
+  
+  .analytics-grid > div {
+    page-break-inside: avoid;
+    margin-bottom: 1rem;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .analytics-grid > div {
+    transition: none;
+  }
+}

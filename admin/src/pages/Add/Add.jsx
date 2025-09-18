@@ -1,11 +1,11 @@
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
 import "./Add.css";
 import { assets } from "../../assets/assets";
-import axios from "axios";
-import {toast} from "react-hot-toast";
 import categories from "../../data/categories.json";
+import { addFood } from "../../lib/api";
 
-const Add = ({ url }) => {
+const Add = () => {
   const [image, setImage] = useState(null);
   const [data, setData] = useState({
     name: "",
@@ -22,37 +22,28 @@ const Add = ({ url }) => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     if (!image) {
-      toast.error("Please upload an image");
-      return;
+      return toast.error("Please upload an image");
     }
 
-    try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-      formData.append("price", Number(data.price));
-      formData.append("category", data.category);
-      formData.append("image", image);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("price", Number(data.price));
+    formData.append("category", data.category);
+    formData.append("image", image);
 
-      const response = await axios.post(`${url}/api/food/add`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+    const result = await addFood(formData);
+    if (result.success) {
+      toast.success(result.message);
+      setData({
+        name: "",
+        description: "",
+        price: "",
+        category: categories[0],
       });
-
-      if (response.data.success) {
-        setData({
-          name: "",
-          description: "",
-          price: "",
-          category: categories[0] || "",
-        });
-        setImage(null);
-        toast.success(response.data.message);
-      } else {
-        toast.error(response.data.message || "Failed to add food item");
-      }
-    } catch (error) {
-      console.error("Upload error:", error.response?.data || error.message);
-      toast.error("Something went wrong. Please try again.");
+      setImage(null);
+    } else {
+      toast.error(result.message);
     }
   };
 
@@ -67,7 +58,7 @@ const Add = ({ url }) => {
               src={
                 image
                   ? URL.createObjectURL(image)
-                  : assets.upload_area || "https://via.placeholder.com/150"
+                  : assets.upload_area
               }
               alt="Upload Preview"
             />

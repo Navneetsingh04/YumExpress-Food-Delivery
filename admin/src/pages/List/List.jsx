@@ -1,42 +1,31 @@
 import React, { useEffect, useState } from "react";
 import "./List.css";
-import axios from "axios";
-import {toast} from "react-hot-toast";
+import { fetchFoods, removeFood } from "../../lib/api";
+import { toast } from "react-hot-toast";
 
-const List = ({ url }) => {
+const List = () => {
   const [list, setList] = useState([]);
 
-  const fetchList = async () => {
-    try {
-      const response = await axios.get(`${url}/api/food/list`);
-      if (response.data.success) {
-        setList(response.data.data);
-      } else {
-        toast.error("Failed to fetch food list");
-      }
-    } catch (error) {
-      console.error("Error fetching food list:", error);
-      toast.error("Something went wrong while fetching the list");
+  const loadList = async () => {
+    const response = await fetchFoods();
+    if (response.success) {
+      setList(response.data);
+    } else {
+      toast.error(response.message || "Failed to fetch foods");
     }
   };
 
-  const removeFood = async (foodId) => {
-    try {
-      const response = await axios.post(`${url}/api/food/remove`, { id: foodId });
-      if (response.data.success) {
-        toast.success(response.data.message);
-        fetchList(); // Refresh the list after deletion
-      } else {
-        toast.error("Failed to remove food item");
-      }
-    } catch (error) {
-      console.error("Error removing food:", error);
-      toast.error("Something went wrong while removing the food item");
+  const handleRemove = async (foodId) => {
+    const result = await removeFood(foodId);
+    if (result.success) {
+      loadList();
+    } else {
+      toast.error(result.message);
     }
   };
 
   useEffect(() => {
-    fetchList();
+    loadList();
   }, []);
 
   return (
@@ -54,7 +43,7 @@ const List = ({ url }) => {
         {list.map((item) => (
           <div key={item._id} className="list-table-format">
             <img
-              src={item.image} // Direct Cloudinary URL
+              src={item.image} 
               alt={item.name || "Food Image"}
               style={{ width: "80px", height: "80px", objectFit: "cover" }}
             />
@@ -62,7 +51,7 @@ const List = ({ url }) => {
             <p>{item.category}</p>
             <p>₹{item.price}</p>
             <p
-              onClick={() => removeFood(item._id)}
+              onClick={() => handleRemove(item._id)}
               className="cursor"
               style={{ color: "red", fontWeight: "bold" }}
             >

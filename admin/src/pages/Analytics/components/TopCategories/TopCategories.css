@@ -1,0 +1,74 @@
+/* TopCategories Component Styles */
+
+.top-categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #f8f9fa, #ecf0f1);
+  border-radius: 12px;
+  border-left: 4px solid #2ecc71;
+  transition: all 0.3s ease;
+}
+
+.category-item:hover {
+  background: rgba(46, 204, 113, 0.05);
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.category-rank {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.category-name {
+  font-weight: 700;
+  color: #2c3e50;
+  text-transform: capitalize;
+  font-size: 16px;
+}
+
+.category-metrics {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.category-quantity,
+.category-revenue {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.category-quantity {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.category-revenue {
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}

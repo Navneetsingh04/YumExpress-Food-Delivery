@@ -13,6 +13,10 @@ dist
 dist-ssr
 *.local
 
+#files
+
+Analytics.backup.jsx
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

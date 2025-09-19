@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./FoodDisplay.css";
-import { StoreContext } from "../../context/StoreContext";
+import { useFood } from "../../store/hooks";
 import FoodItem from "../FoodItem/FoodItem";
+
 const FoodDisplay = ({ category }) => {
-  // get food list using context Api
-  const { food_list, filteredFoodList, searchTerm, isLoadingFood } = useContext(StoreContext);
+  // get food list using Redux
+  const { foodList, filteredFoodList, searchTerm, loading: isLoadingFood } = useFood();
   
   // Use filtered list when searching, otherwise use original list
-  const displayList = searchTerm ? filteredFoodList : food_list;
+  const displayList = searchTerm ? filteredFoodList : foodList;
   
   // Filter items based on category
   const filteredItems = displayList.filter(item => {

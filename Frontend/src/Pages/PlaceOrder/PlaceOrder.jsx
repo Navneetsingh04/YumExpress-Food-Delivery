@@ -1,22 +1,24 @@
-import React, { useContext, useEffect, useState } from "react";
-import axios from "axios"; 
+import { useEffect, useState } from "react";
 import "./PlaceOrder.css";
-import { StoreContext } from "../../context/StoreContext";
+import { useAppDispatch, useAuth, useCart, useFood, useCartTotal } from "../../store/hooks";
+import { clearCartAsync } from "../../store/slices/cartSlice";
 import { useNavigate } from "react-router-dom";
 import {toast} from "react-hot-toast";
 import AddressSelector from "../../components/AddressSelector/AddressSelector";
 import ContactForm from "../../components/ContactForm/ContactForm";
 import ManualAddressForm from "../../components/ManualAddressForm/ManualAddressForm";
 import RazorpayPayment from "../../components/RazorpayPayment/RazorpayPayment";
+import { getProfile } from "../../lib/api";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, food_list, cartItem, url } =
-    useContext(StoreContext);
+  const dispatch = useAppDispatch();
+  const { token } = useAuth();
+  const { items: cartItem } = useCart();
+  const { foodList } = useFood();
+  const totalCartAmount = useCartTotal();
 
   const [openRazorpay, setOpenRazorpay] = useState(false);
-  const [orderCreatedData, setOrderCreatedData] = useState(null);
-  
-  // Simplified state management
+  const [orderData, setOrderData] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [contactData, setContactData] = useState({
     firstName: "",
@@ -34,28 +36,35 @@ const PlaceOrder = () => {
 
   const navigate = useNavigate();
 
-  // Payment handlers
-  const handlePaymentSuccess = (paymentData) => {
+  const handlePaymentSuccess = async (paymentData) => {
+    try {
+      await dispatch(clearCartAsync());
+      toast.success("Payment successful! Order placed.");
+      navigate("/profile?tab=orders");
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      navigate("/profile?tab=orders");
+    }
     setOpenRazorpay(false);
-    setOrderCreatedData(null);
+    setOrderData(null);
   };
 
-  const handlePaymentError = (error) => {
+  const handlePaymentError = async (error) => {
     console.error("Payment failed:", error);
     setOpenRazorpay(false);
+    setOrderData(null);
+    toast.error("Payment failed. Please try again.");
   };
 
-  const handlePaymentClose = () => {
+  const handlePaymentClose = async () => {
     setOpenRazorpay(false);
+    setOrderData(null);
+    toast.info("Payment cancelled.");
   };
-
-  // Handle address selection from AddressSelector
   const handleAddressSelect = (address) => {
     setSelectedAddress(address);
     
     if (address) {
-      // Note: We store the address object and parse the userName in buildOrderData()
-      // This ensures we always use the address-specific name, not user profile name
       const nameParts = address.userName ? address.userName.split(' ') : ['', ''];
       setContactData(prev => ({
         ...prev,
@@ -64,7 +73,6 @@ const PlaceOrder = () => {
         phone: address.phone
       }));
       
-      // Clear manual address data since we're using saved address
       setAddressData({
         street: "",
         city: "",
@@ -73,7 +81,6 @@ const PlaceOrder = () => {
         country: "India",
       });
     } else {
-      // Manual entry - clear saved address data (contact form will be shown)
       setContactData(prev => ({
         ...prev,
         firstName: '',
@@ -86,26 +93,22 @@ const PlaceOrder = () => {
   // Auto-populate user email on mount
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(url + "/api/user/profile", {
-        headers: { token },
-      });
-      if (response.data.success && response.data.user.email) {
+      const res = await getProfile();
+      if (res.success && res.user.email) {
         setContactData(prev => ({
           ...prev,
-          email: response.data.user.email
+          email: res.user.email
         }));
       }
     } catch (error) {
-      // Could not fetch user profile
+      toast.error("Failed to fetch profile");
     }
   };
 
-  // Build final order data
   const buildOrderData = () => {
     let finalAddress;
     
     if (selectedAddress) {
-      // Use saved address - get name directly from saved address, not contactData
       const nameParts = selectedAddress.userName ? selectedAddress.userName.split(' ') : ['', ''];
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
@@ -114,8 +117,8 @@ const PlaceOrder = () => {
       finalAddress = {
         firstName: firstName,
         lastName: lastName,
-        email: contactData.email, // Email from user profile
-        phone: selectedAddress.phone, // Phone from saved address
+        email: contactData.email, 
+        phone: selectedAddress.phone, 
         street: selectedAddress.street,
         city: selectedAddress.city,
         state: selectedAddress.state,
@@ -155,7 +158,7 @@ const PlaceOrder = () => {
     }
 
     let orderItems = [];
-    food_list.forEach((item) => {
+    foodList.forEach((item) => {
       if (cartItem[item._id] && cartItem[item._id] > 0) {
         orderItems.push({ 
           foodId: item._id,
@@ -172,52 +175,27 @@ const PlaceOrder = () => {
       return;
     }
 
-    const subtotal = getTotalCartAmount();
+    const subtotal = totalCartAmount;
     const deliveryFee = subtotal > 0 ? (subtotal > 199 ? 0 : 40) : 0;
 
     const orderData = {
       items: orderItems,
       amount: subtotal + deliveryFee,
       address: finalAddress,
-      payment: false,
     };
 
-    try {
-      
-      let response = await axios.post(url + "/api/order/place", orderData, {
-        headers: { token },
-      });
-
-      if (response.data.success) {
-        const { amount, orderId } = response.data;
-        setOrderCreatedData({ 
-          amount, 
-          orderId, 
-          address: finalAddress,
-          items: orderItems 
-        });
-        setOpenRazorpay(true);
-      } else {
-        console.error("Order failed:", response.data.message);
-        toast.error(response.data.message || "Order failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Order placement error:", error);
-      toast.error(error.response?.data?.message || "An error occurred while placing the order. Please try again.");
-    }
+    setOrderData(orderData);
+    setOpenRazorpay(true);
   };
 
-  const subtotal = getTotalCartAmount();
+  const subtotal = totalCartAmount;
   const deliveryFee = subtotal > 0 ? (subtotal > 199 ? 0 : 40) : 0;
   const total = subtotal + deliveryFee;
 
   useEffect(() => {
-    if (!token) {
-      navigate("/cart");
-    } else if (getTotalCartAmount() === 0) {
+    if (!token || totalCartAmount === 0) {
       navigate("/cart");
     } else {
-      // Auto-populate user email if available
       fetchUserProfile();
     }
   }, [token]);
@@ -280,7 +258,7 @@ const PlaceOrder = () => {
       {/* Razorpay Payment Component */}
       <RazorpayPayment
         isOpen={openRazorpay}
-        orderData={orderCreatedData}
+        orderData={orderData}
         onPaymentSuccess={handlePaymentSuccess}
         onPaymentError={handlePaymentError}
         onClose={handlePaymentClose}

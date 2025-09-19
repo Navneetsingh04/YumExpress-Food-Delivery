@@ -1,20 +1,24 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./FoodItem.css";
 import { assets } from "../../assets/assets";
-import { StoreContext } from "../../context/StoreContext";
+import { useAppDispatch, useCart } from "../../store/hooks";
+import { addToCart, removeFromCart, syncCartWithBackend } from "../../store/slices/cartSlice";
 
 const FoodItem = ({ id, name, price, description, image }) => {
-  const { cartItem = {}, addToCart, removeFromCart, url } =
-    useContext(StoreContext);
+  const dispatch = useAppDispatch();
+  const { items: cartItem = {} } = useCart();
+  const url = import.meta.env.VITE_URL;
 
   const quantity = cartItem?.[id] || 0;
 
   const handleAddToCart = () => {
-    addToCart(id);
+    dispatch(addToCart({ itemId: id }));
+    dispatch(syncCartWithBackend({ itemId: id, action: 'add' }));
   };
 
   const handleRemoveFromCart = () => {
-    removeFromCart(id);
+    dispatch(removeFromCart({ itemId: id }));
+    dispatch(syncCartWithBackend({ itemId: id, action: 'remove' }));
   };
 
   return (

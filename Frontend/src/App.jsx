@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+import ReduxInitializer from "./components/ReduxInitializer/ReduxInitializer";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import Home from "./Pages/Home/Home";
@@ -12,7 +15,6 @@ import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Verify from "./Pages/Verify/Verify";
 import Profile from "./Pages/Profile/Profile";
 import { Toaster } from "react-hot-toast";
-import StoreContextProvider from "./context/StoreContext";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -23,11 +25,12 @@ const App = () => {
   }, [location.pathname]);
 
   return (
-    <StoreContextProvider>
-      {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
+    <Provider store={store}>
+      <ReduxInitializer>
+        {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
 
-      <div className="app">
         <Navbar setShowLogin={setShowLogin} />
+        <div className="app">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutUs />} />
@@ -53,7 +56,8 @@ const App = () => {
           },
         }}
       />
-    </StoreContextProvider>
+      </ReduxInitializer>
+    </Provider>
   );
 };
 

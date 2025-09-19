@@ -1,49 +1,43 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./AddressSelector.css";
-import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
+import { getAddresses } from "../../lib/api";
 
 const AddressSelector = ({ onAddressSelect, selectedAddressId, allowManualEntry = true }) => {
-  const { url, token } = useContext(StoreContext);
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get(url + "/api/user/addresses", {
-        headers: { token }
-      });
-      
-      if (response.data.success) {
-        setAddresses(response.data.addresses);
-        
+      setLoading(true);
+      const res = await getAddresses();
+
+      if (res?.success) {
+        setAddresses(res.addresses || []);
+
         // Auto-select default address if none selected
         if (!selectedAddressId) {
-          const defaultAddress = response.data.addresses.find(addr => addr.isDefault);
+          const defaultAddress = res.addresses.find(addr => addr.isDefault);
           if (defaultAddress) {
             onAddressSelect(defaultAddress);
-          } else if (response.data.addresses.length > 0) {
-            onAddressSelect(response.data.addresses[0]);
+          } else if (res.addresses.length > 0) {
+            onAddressSelect(res.addresses[0]);
           } else if (allowManualEntry) {
-            onAddressSelect(null); // Trigger manual entry
+            onAddressSelect(null);
           }
         }
+      } else {
+        if (allowManualEntry) onAddressSelect(null);
       }
     } catch (error) {
-      console.error("Error fetching addresses:", error);
-      if (allowManualEntry) {
-        onAddressSelect(null); // Fallback to manual entry
-      }
+      if (allowManualEntry) onAddressSelect(null);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (token) {
-      fetchAddresses();
-    }
-  }, [token]);
+    fetchAddresses();
+  }, []);
 
   const handleAddressClick = (address) => {
     onAddressSelect(address);
@@ -94,7 +88,7 @@ const AddressSelector = ({ onAddressSelect, selectedAddressId, allowManualEntry 
           </div>
         </div>
       )}
-      
+
       {allowManualEntry && (
         <div className="manual-entry-option">
           <div

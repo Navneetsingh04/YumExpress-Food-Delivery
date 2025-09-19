@@ -42,7 +42,8 @@
   opacity: 0.8;
 }
 
-.phone, .email {
+.phone,
+.email {
   color: #666;
 }
 
@@ -162,8 +163,9 @@
   display: flex;
   align-items: center;
   margin-bottom: 24px;
-  padding: 20px 0;
+  padding: 15px 0;
   border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
 }
 
 .info-group:last-child {
@@ -183,6 +185,7 @@
   color: #666;
   font-size: 1rem;
   line-height: 1.5;
+  flex: 1;
 }
 
 /* Loading State */
@@ -289,16 +292,16 @@
   }
 }
 
-/* Profile Content Sections */
-.profile-content.left-align {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
+/* Profile Details Responsive */
+@media (max-width: 600px) {
+  .info-group {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 30px;
+  }
 
-/* Account Info */
-.account-info {
-  width: 100%;
-  max-width: 600px;
-  padding: 0;
+  .account-info h3 {
+    font-size: 1.4rem;
+    text-align: center;
+  }
 }

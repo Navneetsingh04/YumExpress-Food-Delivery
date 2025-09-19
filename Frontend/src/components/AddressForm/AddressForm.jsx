@@ -1,11 +1,9 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./AddressForm.css";
-import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { saveAddress } from "../../lib/api";
 
 const AddressForm = ({ address, onClose, onAddressUpdate }) => {
-  const { url, token } = useContext(StoreContext);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -46,90 +44,27 @@ const AddressForm = ({ address, onClose, onAddressUpdate }) => {
     setLoading(true);
 
     // Validation
-    if (!formData.name.trim()) {
-      toast.error("Address name is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.userName.trim()) {
-      toast.error("User name is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.street.trim()) {
-      toast.error("Street address is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.city.trim()) {
-      toast.error("City is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.state.trim()) {
-      toast.error("State is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.pincode.trim()) {
-      toast.error("Pincode is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!/^\d{6}$/.test(formData.pincode)) {
-      toast.error("Please enter a valid 6-digit pincode");
-      setLoading(false);
-      return;
-    }
-
-    if (!formData.phone.trim()) {
-      toast.error("Phone number is required");
-      setLoading(false);
-      return;
-    }
-
-    if (!/^\d{10}$/.test(formData.phone)) {
-      toast.error("Please enter a valid 10-digit phone number");
-      setLoading(false);
-      return;
-    }
+    if (!formData.name.trim()) return toast.error("Address name is required");
+    if (!formData.userName.trim()) return toast.error("User name is required");
+    if (!formData.street.trim()) return toast.error("Street address is required");
+    if (!formData.city.trim()) return toast.error("City is required");
+    if (!formData.state.trim()) return toast.error("State is required");
+    if (!formData.pincode.trim() || !/^\d{6}$/.test(formData.pincode))
+      return toast.error("Please enter a valid 6-digit pincode");
+    if (!formData.phone.trim() || !/^\d{10}$/.test(formData.phone))
+      return toast.error("Please enter a valid 10-digit phone number");
 
     try {
-      
-      let response;
-      
-      if (address) {
-        // Update existing address
-        response = await axios.put(url + "/api/user/addresses/update", {
-          addressId: address._id,
-          ...formData
-        }, {
-          headers: { token }
-        });
-      } else {
-        // Add new address
-        response = await axios.post(url + "/api/user/addresses/add", formData, {
-          headers: { token }
-        });
-      }
+      const res = await saveAddress(formData, address?._id);
 
-      if (response.data.success) {
-        toast.success(response.data.message);
-        onAddressUpdate(response.data.addresses);
+      if (res.success) {
+        toast.success(res.message);
+        onAddressUpdate(res.addresses);
         onClose();
       } else {
-        console.error("Address operation failed:", response.data);
-        toast.error(response.data.message);
+        toast.error(res.message || "Failed to save address");
       }
     } catch (error) {
-      console.error("Error saving address:", error);
-      console.error("Error response:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to save address");
     } finally {
       setLoading(false);

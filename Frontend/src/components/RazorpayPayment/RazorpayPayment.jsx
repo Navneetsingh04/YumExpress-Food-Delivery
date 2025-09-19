@@ -1,108 +1,78 @@
-import React, { useEffect, useContext } from "react";
-import axios from "axios";
-import {toast} from "react-hot-toast";
+import React, { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { StoreContext } from "../../context/StoreContext";
+import { getRazorpayKeyId, createRazorpayOrder, verifyRazorpayPayment } from "../../lib/api";
 
 const RazorpayPayment = ({ 
   isOpen, 
   orderData, 
   onPaymentSuccess, 
   onPaymentError, 
-  onClose 
+  onClose, 
+  clearCart 
 }) => {
-  const { url, token } = useContext(StoreContext);
   const navigate = useNavigate();
 
-  // Load Razorpay script
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
+  const loadRazorpayScript = () =>
+    new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
     });
-  };
 
-  // Initialize and display Razorpay checkout
   const initializeRazorpay = async () => {
     try {
-      // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
-        toast.error("Razorpay failed to load. Please try again later.");
-        onPaymentError("Script loading failed");
-        return;
+        toast.error("Razorpay failed to load.");
+        return onPaymentError("Script loading failed");
       }
 
-      // Get Razorpay key
-      const keyResponse = await axios.get(url + "/api/payment/get-razorpay-key-id", {
-        headers: { token },
-      });
-      
-      if (!keyResponse.data.razorpay_key_id) {
-        toast.error("Payment configuration error. Please try again.");
-        onPaymentError("Key fetch failed");
-        return;
+      const keyData = await getRazorpayKeyId();
+      if (!keyData.razorpay_key_id) {
+        toast.error("Payment configuration error.");
+        return onPaymentError("Key fetch failed");
       }
 
-      // Create Razorpay order
-      const orderResponse = await axios.post(
-        url + "/api/payment/order",
-        {
-          amount: orderData.amount,
-          orderId: orderData.orderId,
-        },
-        {
-          headers: { token },
-        }
-      );
-
-      if (!orderResponse.data.order_id) {
-        toast.error("Failed to create payment order. Please try again.");
-        onPaymentError("Order creation failed");
-        return;
+      const orderRes = await createRazorpayOrder(orderData.amount, orderData);
+      if (!orderRes.order_id) {
+        toast.error("Failed to create payment order.");
+        return onPaymentError("Order creation failed");
       }
 
-      // Configure Razorpay options
       const options = {
-        key: keyResponse.data.razorpay_key_id,
-        amount: orderResponse.data.amount,
-        currency: orderResponse.data.currency,
+        key: keyData.razorpay_key_id,
+        amount: orderRes.amount,
+        currency: orderRes.currency,
         name: "YumExpress",
         description: "Food Order Payment",
-        order_id: orderResponse.data.order_id,
-        handler: async function (response) {
+        order_id: orderRes.order_id,
+        handler: async function (res) {
           try {
-    
-            // Verify payment on backend
-            const verifyResponse = await axios.post(
-              url + "/api/payment/verify",
-              {
-                orderId: orderData.orderId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              },
-              {
-                headers: { token },
-              }
-            );
+            const verifyRes = await verifyRazorpayPayment({
+              orderData: orderData,
+              razorpay_payment_id: res.razorpay_payment_id,
+              razorpay_order_id: res.razorpay_order_id,
+              razorpay_signature: res.razorpay_signature,
+            });
 
-            if (verifyResponse.data.success) {
-              toast.success("Payment successful! Order placed.");
-              onPaymentSuccess(verifyResponse.data);
-              navigate("/profile?tab=orders");
+            if (verifyRes.success) {
+              onPaymentSuccess(verifyRes);
             } else {
-              toast.error("Payment verification failed. Please contact support.");
+              toast.error("Payment verification failed.");
               onPaymentError("Payment verification failed");
             }
-          } catch (error) {
-            console.error("Payment verification error:", error);
-            toast.error("Payment verification failed. Please contact support.");
+          } catch (err) {
+            toast.error("Payment verification error.");
             onPaymentError("Payment verification error");
           }
+        },
+        error: function (error) {
+          console.error("Razorpay payment error:", error);
+          toast.error("Payment failed. Please try again.");
+          onPaymentError("Payment failed");
         },
         prefill: {
           name: orderData.address?.firstName + " " + orderData.address?.lastName || "",
@@ -111,34 +81,26 @@ const RazorpayPayment = ({
         },
         notes: {
           address: `${orderData.address?.street}, ${orderData.address?.city}`,
-          order_id: orderData.orderId,
+          items_count: orderData.items?.length || 0,
         },
-        theme: {
-          color: "#ff6347",
-        },
+        theme: { color: "#ff6347" },
         modal: {
           ondismiss: function() {
+            onPaymentError("Payment cancelled by user");
             onClose();
-          }
-        }
+          },
+        },
       };
 
-      // Open Razorpay checkout
-      const paymentObject = new window.Razorpay(options);
-      paymentObject.open();
-
+      new window.Razorpay(options).open();
     } catch (error) {
-      console.error("Razorpay initialization error:", error);
-      toast.error("Payment initialization failed. Please try again.");
+      toast.error("Payment initialization failed.");
       onPaymentError("Initialization failed");
     }
   };
 
-  // Auto-initialize when component opens
   useEffect(() => {
-    if (isOpen && orderData) {
-      initializeRazorpay();
-    }
+    if (isOpen && orderData) initializeRazorpay();
   }, [isOpen, orderData]);
 
   return null;

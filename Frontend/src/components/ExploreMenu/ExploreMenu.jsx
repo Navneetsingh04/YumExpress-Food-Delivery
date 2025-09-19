@@ -1,18 +1,20 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./ExploreMenu.css";
 import { menu_list } from "../../assets/assets";
-import { StoreContext } from "../../context/StoreContext";
+import { useAppDispatch } from "../../store/hooks";
+import { setSearchTerm, filterFoodList } from "../../store/slices/foodSlice";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ExploreMenu = ({ category, setCatgory }) => {
-  const { searchFood } = useContext(StoreContext);
+  const dispatch = useAppDispatch();
   const menuListRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   
   const handleCategoryClick = (menuName) => {
     // Clear search when selecting a category
-    searchFood("");
+    dispatch(setSearchTerm(""));
+    dispatch(filterFoodList());
     setCatgory((prev) =>
       prev === menuName ? "All" : menuName
     );

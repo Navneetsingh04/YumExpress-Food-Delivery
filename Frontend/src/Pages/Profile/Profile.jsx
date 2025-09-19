@@ -1,21 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Profile.css";
-import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import AddressManager from "../../components/AddressManager/AddressManager";
 import MyOrders from "../../components/MyOrders/MyOrders";
 import { MapPin, ShoppingBag, User } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { getProfile } from "../../lib/api";
 
 const Profile = () => {
-  const { url, token } = useContext(StoreContext);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("profile");
   const location = useLocation();
 
-  // Handle URL query parameters to set active tab
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get("tab");
@@ -26,17 +25,13 @@ const Profile = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(url + "/api/user/profile", {
-        headers: { token },
-      });
-
-      if (response.data.success) {
-        setUserProfile(response.data.user);
+      const res = await getProfile();
+      if (res.success) {
+        setUserProfile(res.user);
       } else {
-        toast.error(response.data.message);
+        toast.error(res.message);
       }
     } catch (error) {
-      console.error("Error fetching user profile:", error);
       toast.error("Failed to load profile");
     } finally {
       setLoading(false);
@@ -62,40 +57,13 @@ const Profile = () => {
           </div>
         );
       case "profile":
-        return (
-          <div className="profile-content left-align">
-            <div className="account-info">
-              <h3>Profile Details</h3>
-              <div className="info-group">
-                <label>Full Name:</label>
-                <span>{userProfile?.name || "Not available"}</span>
-              </div>
-              <div className="info-group">
-                <label>Email:</label>
-                <span>{userProfile?.email || "Not available"}</span>
-              </div>
-              <div className="info-group">
-                <label>Phone:</label>
-                <span>{userProfile?.phone || "Not available"}</span>
-              </div>
-              <div className="info-group">
-                <label>Account Created:</label>
-                <span>
-                  {userProfile?.createdAt
-                    ? new Date(userProfile.createdAt).toLocaleDateString()
-                    : "Not available"}
-                </span>
-              </div>
-            </div>
-          </div>
-        );
       default:
         return (
           <div className="profile-content left-align">
             <div className="account-info">
               <h3>Profile Details</h3>
               <div className="info-group">
-                <label>Full Name:</label>
+                <label>Name:</label>
                 <span>{userProfile?.name || "Not available"}</span>
               </div>
               <div className="info-group">

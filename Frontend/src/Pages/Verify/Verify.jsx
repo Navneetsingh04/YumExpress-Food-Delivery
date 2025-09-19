@@ -1,34 +1,43 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./Verify.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
+import { toast } from "react-hot-toast";
+import { verifyOrder } from "../../lib/api";
+
 const Verify = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const success = searchParams.get("success");
   const orderId = searchParams.get("OrderId");
-
-  const { url } = useContext(StoreContext);
   const navigate = useNavigate();
-  const verifyPayment = async () => {
-    const response = await axios.post(url + "/api/order/verify", {
-      success,
-      orderId,
-    });
-    if (response.data.success) {
-      navigate("/myorders");
+
+  useEffect(() => {
+    const performVerification = async () => {
+      try {
+        const res = await verifyOrder({ success, orderId });
+        if (res.success) {
+          toast.success("Payment verified successfully!");
+          navigate("/myorders");
+        } else {
+          toast.error(res.message || "Payment verification failed.");
+          navigate("/");
+        }
+      } catch (error) {
+        toast.error("Network error. Unable to verify payment.");
+        navigate("/");
+      }
+    };
+
+    if (orderId) {
+      performVerification();
     } else {
       navigate("/");
     }
-  };
-
-  useEffect(() => {
-    verifyPayment;
-  }, []);
+  }, [success, orderId, navigate]);
 
   return (
     <div className="verify">
       <div className="spinner"></div>
+      <p>Verifying payment, please wait...</p>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import React from "react";
 import "./AboutUs.css";
 
 const AboutUs = () => {
@@ -27,7 +26,7 @@ const AboutUs = () => {
       </ul>
 
       <p>
-        Join us on this journey and let’s redefine the food delivery experience
+        Join us on this journey and let's redefine the food delivery experience
         together!
       </p>
     </div>

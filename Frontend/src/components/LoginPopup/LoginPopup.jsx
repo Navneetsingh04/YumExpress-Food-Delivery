@@ -1,13 +1,13 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import "./LoginPopup.css";
 import { assets } from "../../assets/assets";
-import { StoreContext } from "../../context/StoreContext";
-import axios from "axios";
+import { useAppDispatch, useAuth } from "../../store/hooks";
+import { loginUser, registerUser } from "../../store/slices/authSlice";
 import {toast} from "react-hot-toast";
 
 const LoginPopup = ({ setShowLogin }) => {
-  const { url, setToken } = useContext(StoreContext);
-
+  const dispatch = useAppDispatch();
+  const { loading } = useAuth();
   const [currentState, setState] = useState("Login");
 
   const [data, setData] = useState({
@@ -24,20 +24,17 @@ const LoginPopup = ({ setShowLogin }) => {
 
   const onLogin = async (event) => {
     event.preventDefault();
-    let newUrl = url;
-    if (currentState === "Login") {
-      newUrl += "/api/user/login";
-    } else {
-      newUrl += "/api/user/register";
-    }
-
-    const response = await axios.post(newUrl, data);
-    if (response.data.success) {
-      setToken(response.data.token);
-      localStorage.setItem("token", response.data.token);
+    
+    try {
+      if (currentState === "Login") {
+        await dispatch(loginUser(data)).unwrap();
+      } else {
+        await dispatch(registerUser(data)).unwrap();
+      }
       setShowLogin(false);
-    } else {
-      toast.error(response.data.message);
+      toast.success(`${currentState} successful!`);
+    } catch (error) {
+      toast.error(error || `${currentState} failed`);
     }
   };
 
